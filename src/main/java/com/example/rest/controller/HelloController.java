@@ -10,4 +10,9 @@ public class HelloController {
     public String hello() {
         return "Welcome to your first RESTful Spring Boot app!";
     }
+
+    @GetMapping("/api/hello1")
+    public String hello1() {
+        return "Welcome to your first RESTful Spring Boot app!";
+    }
 }
