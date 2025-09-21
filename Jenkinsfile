@@ -40,19 +40,22 @@ pipeline {
     }
 
     stage('Deploy to Minikube') {
-      steps {
-        withCredentials([file(credentialsId: 'kubeconfig-linux', variable: 'KUBECONFIG_FILE')]) {
-          sh '''
-            mkdir -p $HOME/.kube
-            cp $KUBECONFIG_FILE $HOME/.kube/config
-            sed -e "s|IMAGE_PLACEHOLDER|${IMAGE_TAG}|g" ${K8S_MANIFEST} > k8s/deployment-for-apply.yaml
-            kubectl apply -f k8s/deployment.yaml
-            kubectl apply -f k8s/service.yaml || true
-            kubectl rollout status deployment/${DEPLOYMENT_NAME} --timeout=120s
-          '''
-        }
-      }
+  steps {
+    withCredentials([file(credentialsId: 'kubeconfig-linux', variable: 'KUBECONFIG_FILE')]) {
+      sh '''
+        mkdir -p $HOME/.kube
+        cp $KUBECONFIG_FILE $HOME/.kube/config
+
+        echo ">>> Applying deployment with validation disabled..."
+        kubectl apply -f k8s/deployment.yaml --validate=false
+        kubectl apply -f k8s/service.yaml --validate=false || true
+
+        echo ">>> Checking rollout..."
+        kubectl rollout status deployment/${DEPLOYMENT_NAME} --timeout=120s
+      '''
     }
+  }
+}	
   }
 
   post {
