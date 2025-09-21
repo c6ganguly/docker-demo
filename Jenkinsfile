@@ -41,7 +41,7 @@ pipeline {
 
     stage('Deploy to Minikube') {
       steps {
-        withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG_FILE')]) {
+        withCredentials([file(credentialsId: 'kubeconfig-linux', variable: 'KUBECONFIG_FILE')]) {
           sh '''
             mkdir -p $HOME/.kube
             cp $KUBECONFIG_FILE $HOME/.kube/config
